@@ -26,5 +26,5 @@ Note that all of this is very rough at the moment, with no documentation support
 
 Dual, VirtualDesktopAccessor, and iswitchw are all licensed under MIT. This project as a whole is licensed under GPLv3. Please see [LICENSE.txt](https://github.com/StevenTammen/hieam/blob/master/LICENSE).
 
-
+<br/>
 <a rel="license", href="http://www.gnu.org/licenses/gpl.html"><img src="http://www.gnu.org/graphics/gplv3-88x31.png", alt="GNU GPLv3 License")></a>
