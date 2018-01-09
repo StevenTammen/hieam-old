@@ -14,7 +14,11 @@
 <img src = "https://steventammen.com/assets/images/keyboard-layouts/steno.png">
 <br/>
 
-I have not yet started the last three layers (and probably won't for a while as they are not as essential), but have the others mostly completed in the form of the autohotkey scripts located in this repository. 
+I have not yet started the last three layers (and probably won't for a while as they are not as essential), but have the others mostly completed in the form of the autohotkey scripts located in this repository.
+
+Please note that the keybindings are currently assuming a specific keymap. I am temporarily using a Kinesis Advantage 2 (until I get around to buying or assembling a board with a hackable microcontroller), so the assumed default map is based on the on-board firmware remapped layout that I have on my Kinesis. Here's a picture:
+
+<img src = "https://steventammen.com/assets/images/keyboard-layouts/kinesis.png"><br/>
 
 This repository also includes my modified version of [iswitchw](https://github.com/tvjg/iswitchw), a window switching autohotkey application. My version will only pull windows from the current virtual desktop (instead of from all non-hidden windows). I used a very useful [DLL file](https://github.com/Ciantic/VirtualDesktopAccessor) for accessing virtual desktops, courtesy of Jari Pennanen. I also included my slightly tweaked version of [Dual](https://github.com/lydell/dual), an autohotkey library that allows for the creation of dual-role keys and lag-free key combinations, and [hotstrings.ahk](https://autohotkey.com/board/topic/114764-regex-dynamic-hotstrings/), which allows for RegEx based dynamic hotstrings.
 
@@ -27,7 +31,6 @@ Note that all of this is very rough at the moment, with no documentation support
 My current modifications to make Vim work with the layout switch around some commands to get the cursor keys in the T-shaped formation of tcsr. All the changes have mnemonics, albeit different ones than vanilla Vim. Here's the code to put in .vimrc:
 
 ```
-  
 nnoremap t h
 nnoremap T H
 
@@ -56,7 +59,6 @@ nnoremap X T
 
 nnoremap <Bs> X
 nnoremap <Del> x
-  
 ```
 
 The mnemonics below make sense to me, which is what is important. You may want to do your own tinkering if you don't like them. You can use [this page](https://vimhelp.appspot.com/index.txt.html) to make sure you aren't losing commands in your remapping. I haven't looked much into global command or bracket command conflicts caused by these remappings, but I'll handle them later (I only noticed a couple conflicts). I'm still too new to Vim to really worry about much other than straight normal mode.
