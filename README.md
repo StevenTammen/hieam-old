@@ -24,7 +24,55 @@ The Tab switching, desktop switching, and launching capabilities included in the
 
 Note that all of this is very rough at the moment, with no documentation support. I wanted to get my layout working as quickly as possible, and did not prioritize maintainability and elegance this go around. Since I haven't done any extensive unit testing, there are probably at least a few bugs in the ~4000 lines of code. Any contributions are welcome and appreciated.
 
-Dual, VirtualDesktopAccessor, and iswitchw are all licensed under MIT. This project as a whole is licensed under GPLv3. Please see [LICENSE.txt](https://github.com/StevenTammen/hieam/blob/master/LICENSE).
+My current modifications to make Vim work with the layout switch around some commands to get the cursor keys in the T-shaped formation of tcsr. All the changes have mnemonics, albeit different ones than vanilla Vim. Here's the code to put in .vimrc:
+
+<code>
+  
+nnoremap t h
+nnoremap T H
+
+nnoremap s j
+
+nnoremap r l
+nnoremap R L
+
+nnoremap c k
+
+nnoremap h d
+nnoremap H D
+nnoremap hh dd
+
+nnoremap k s
+
+nnoremap l r
+nnoremap L R
+
+nnoremap d c
+nnoremap D C
+nnoremap dd cc
+
+nnoremap x t
+nnoremap X T
+
+nnoremap <Bs> X
+nnoremap <Del> x
+  
+</code>
+
+The mnemonics below make sense to me, which is what is important. You may want to do your own tinkering if you don't like them. You can use [this page](https://vimhelp.appspot.com/index.txt.html) to make sure you aren't losing commands in your remapping. I haven't looked much into global command or bracket command conflicts, but I'll handle them later. I'm still too new to Vim to really worry about much other than straight normal mode.
+
+Mnemonics:
+
+- H for "harvest" = cut Nmove text. Replaces d/D.
+- D for "delete" = delete Nmove text and enter insert mode. You don't delete text you want to paste, you *harvest* it. Replaces c/C.
+- K for "kill" = delete character under cursor. You delete text but kill characters. (This still gives me a chuckle every time... I guess I have a strange sense of humor). Replaces s. (S as a command is lost, since I just use cc instead).
+- Backspace/Delete take over X/x, respectively. I never understood why x was necessary as a separate command.
+- X for "up/back to but excluding" = till. Replaces t/T.
+- L for "layer" = overwrite N characters or toggle overwrite mode. Replaces r/R.
+
+Note that J and K retain their special meanings. I'll probably remap j to something else eventually once I have a better idea what would be useful to put there.
+
+Note that Dual, VirtualDesktopAccessor, and iswitchw are all licensed under MIT. This project as a whole is licensed under GPLv3. Please see [LICENSE.txt](https://github.com/StevenTammen/hieam/blob/master/LICENSE).
 
 <br/>
 <a rel="license", href="http://www.gnu.org/licenses/gpl.html"><img src="http://www.gnu.org/graphics/gplv3-88x31.png", alt="GNU GPLv3 License")></a>
