@@ -26,7 +26,7 @@ Note that all of this is very rough at the moment, with no documentation support
 
 My current modifications to make Vim work with the layout switch around some commands to get the cursor keys in the T-shaped formation of tcsr. All the changes have mnemonics, albeit different ones than vanilla Vim. Here's the code to put in .vimrc:
 
-<code>
+```
   
 nnoremap t h
 nnoremap T H
@@ -57,15 +57,15 @@ nnoremap X T
 nnoremap <Bs> X
 nnoremap <Del> x
   
-</code>
+```
 
-The mnemonics below make sense to me, which is what is important. You may want to do your own tinkering if you don't like them. You can use [this page](https://vimhelp.appspot.com/index.txt.html) to make sure you aren't losing commands in your remapping. I haven't looked much into global command or bracket command conflicts, but I'll handle them later. I'm still too new to Vim to really worry about much other than straight normal mode.
+The mnemonics below make sense to me, which is what is important. You may want to do your own tinkering if you don't like them. You can use [this page](https://vimhelp.appspot.com/index.txt.html) to make sure you aren't losing commands in your remapping. I haven't looked much into global command or bracket command conflicts caused by these remappings, but I'll handle them later (I only noticed a couple conflicts). I'm still too new to Vim to really worry about much other than straight normal mode.
 
 Mnemonics:
 
-- H for "harvest" = cut Nmove text. Replaces d/D.
-- D for "delete" = delete Nmove text and enter insert mode. You don't delete text you want to paste, you *harvest* it. Replaces c/C.
-- K for "kill" = delete character under cursor. You delete text but kill characters. (This still gives me a chuckle every time... I guess I have a strange sense of humor). Replaces s. (S as a command is lost, since I just use cc instead).
+- H for "harvest" = cut Nmove text. Replaces d/D/dd.
+- D for "delete" = delete Nmove text and enter insert mode. You don't delete text you want to paste, you *harvest* it. Replaces c/C/cc.
+- K for "kill" = delete character under cursor and enter insert mode. You delete text but kill characters. (This still gives me a chuckle every time... I guess I have a strange sense of humor). Replaces s. S as a command is lost, since I just use dd (i.e., cc) instead.
 - Backspace/Delete take over X/x, respectively. I never understood why x was necessary as a separate command.
 - X for "up/back to but excluding" = till. Replaces t/T.
 - L for "layer" = overwrite N characters or toggle overwrite mode. Replaces r/R.
