@@ -1,3 +1,20 @@
+## TODOs (mirrored from the top of remap.ahk)
+
+```
+;    TODO: get normal text briefs working with terminating characters. Dynamic regex hotstrings with subroutines?
+;    TODO: make \ into a dual role key with F21 for sequences of non-autospaced characters. Figure out how to deal with downKey and upKey differences 
+;    TODO: make keys after a #@`~ on F16 layer act as if F17 was down, not F16.
+
+;    TODO: window move/resize command layer
+;    TODO: mouse layer: t-warp, warp, fast/slow
+;    TODO: construct layer. Start off with Org mode and code constructs like while, switch, etc.
+;    TODO: put remap, expand, and window scripts in windows startup sequence
+
+;    TODO: Figure out why F21 Down would have to be included in both remap and expand, not just remap, to start non-autospaced. Initial key states across scripts?
+;    TODO: Figure out why WinActivate on chrome class is necessary rather than using WinGetClass etc. (For script-internal window focusing)
+;			WinActivate, ahk_class Chrome_WidgetWin_1
+```
+
 <h3>Base Layer</h3>
 <img src = "https://steventammen.com/assets/images/keyboard-layouts/base.png">
 <h3>Number Layer</h3>
