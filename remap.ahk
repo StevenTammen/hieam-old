@@ -115,6 +115,8 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 ; always proceeds from lowest FKey value to highest FKey value, so lower FKeys take priority.
 
 ;    TODO: get normal text briefs working with terminating characters. Dynamic regex hotstrings with subroutines?
+;    TODO: get normal text expansion with {Expd} working. E.g., u{Expd} --> you, instantly.
+;    TODO: get Alt-F4 put in place for \-prefixed Esc
 ;    TODO: make \ into a dual role key with F21 for sequences of non-autospaced characters. Figure out how to deal with downKey and upKey differences 
 ;    TODO: make keys after a #@`~ on F16 layer act as if F17 was down, not F16.
 
