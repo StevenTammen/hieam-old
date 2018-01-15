@@ -70,25 +70,25 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 ;		  ----------------------------------------------
 ;		 | Shift leader							|	F14 	|
 ;		  ----------------------------------------------
-;		 | Num hold								|	F15 	|
+;		 | Construct Hold						|	F15 	|
 ;		  ----------------------------------------------
-;		 | Shift hold								|	F16 	|
+;		 | Mouse Hold							|	F16 	|
 ;		  ----------------------------------------------
-;		 | Punc after Num						|	F17 	|
+;		 | Num hold								|	F17 	|
 ;		  ----------------------------------------------
-;		 | Command								|	F18 	|
+;		 | Shift hold								|	F18 	|
 ;		  ----------------------------------------------
-;		 | Vim										|	F19 	|
+;		 | Punc after Num						|	F19 	|
 ;		  ----------------------------------------------
-;		 | No Autospacing						|	F20 	|
+;		 | Command								|	F20 	|
 ;		  ----------------------------------------------
-;		 | Autospaced after punc			|	F21 	|
+;		 | No Autospacing						|	F21 	|
 ;		  ----------------------------------------------
-;		 | Autospaced after .?!				|	F22 	|
+;		 | Autospaced after punc			|	F22 	|
 ;		  ----------------------------------------------
-;		 | Nested punctuation					|	F23 	|
+;		 | Autospaced after .?!				|	F23 	|
 ;		  ----------------------------------------------
-;		 | Modify active win					|	F24? | 			TODO? ;;;;;;;;;;;;
+;		 | Nested punctuation					|	F24 	|
 ;		  ----------------------------------------------
 ;
 ; 	   Priority: F13 > F14 > F15 > F16 > ... > F24
@@ -114,21 +114,18 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 ; In particular, the enumeration of associative array keys for the array "combinators" in the second line
 ; always proceeds from lowest FKey value to highest FKey value, so lower FKeys take priority.
 
+;    TODO: get normal text briefs working with terminating characters. Dynamic regex hotstrings with subroutines?
+;    TODO: make \ into a dual role key with F21 for sequences of non-autospaced characters. Figure out how to deal with downKey and upKey differences 
+;    TODO: make keys after a #@`~ on F16 layer act as if F17 was down, not F16.
 
-;    TODO: Caps Lock
-;    TODO: Num Lock
-;    TODO: normal expand key behavior, text briefs
-;    TODO: fix backspace and "(< etc. (backspace open and closed and reset F21/F22 state, nestLevel, and F23 state). Use A_PriorHotkey?
+;    TODO: window move/resize command layer
+;    TODO: mouse layer: t-warp, warp, fast/slow
+;    TODO: construct layer. Start off with Org mode and code constructs like while, switch, etc.
+;    TODO: put remap, expand, and window scripts in windows startup sequence
 
-;    TODO: Fix "" behavior when closing quotes in editing.  ???
-;    TODO: Fix Enter, Tab, etc. behavior when in vim mode (to only send Key)
-;    TODO: put remap, expand, and window/tab/launch/desktop apps in windows startup sequence if not already there
-;    TODO: test thoroughly
-
-;    TODO: Figure out better way to check next characters for editing (" etc.?
-;    TODO: Figure out why F20 Down has to be included in both remap and expand, not just remap.
-;    TODO: Figure out why WinActivate on chrome class is necessary rather than using WinGetClass etc.
-;		WinActivate, ahk_class Chrome_WidgetWin_1
+;    TODO: Figure out why F21 Down would have to be included in both remap and expand, not just remap, to start non-autospaced. Initial key states across scripts?
+;    TODO: Figure out why WinActivate on chrome class is necessary rather than using WinGetClass etc. (For script-internal window focusing)
+;			WinActivate, ahk_class Chrome_WidgetWin_1
 
 
 
@@ -171,21 +168,21 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	F14Keys := F14Keys_Letter("B")
 	
 
-	; ######## F15 Combinator ########
-
-	F15Keys := F15Keys_Opening_NoCap("{", "}")
-	
-	
-	; ######## F16 Combinator ########
-	
-	F16Keys := F16Keys_Letter("B")
-
-
 	; ######## F17 Combinator ########
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+	F17Keys := F17Keys_Opening_NoCap("{", "}")
+	
+	
+	; ######## F18 Combinator ########
+	
+	F18Keys := F18Keys_Letter("B")
+
+
+	; ######## F19 Combinator ########
+
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -197,18 +194,18 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 	
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["B", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["B", "F23 Up"]})
 	
 	return
 
@@ -228,21 +225,21 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	F14Keys := F14Keys_Letter("Y")
 
 
-	; ######## F15 Combinator ########
-	
-	F15Keys := F15Keys_Opening_PassThroughCap("[", "]")
-
-
-	; ######## F16 Combinator ########
-
-	F16Keys := F16Keys_Letter("Y")
-
-
 	; ######## F17 Combinator ########
+	
+	F17Keys := F17Keys_Opening_PassThroughCap("[", "]")
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+
+	; ######## F18 Combinator ########
+
+	F18Keys := F18Keys_Letter("Y")
+
+
+	; ######## F19 Combinator ########
+
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -254,18 +251,18 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["Y", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["Y", "F23 Up"]})
 
 	return
 
@@ -285,21 +282,21 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	F14Keys := F14Keys_Letter("O")
 
 
-	; ######## F15 Combinator ########
-	
-	F15Keys := F15Keys_Closing("]", nestLevel)
-
-
-	; ######## F16 Combinator ########
-
-	F16Keys := F16Keys_Letter("O")
-
-
 	; ######## F17 Combinator ########
+	
+	F17Keys := F17Keys_Closing("]", nestLevel)
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+
+	; ######## F18 Combinator ########
+
+	F18Keys := F18Keys_Letter("O")
+
+
+	; ######## F19 Combinator ########
+
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -309,18 +306,18 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	shiftChar := "O"
 	numChar := "]"
 	
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["O", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["O", "F23 Up"]})
 
 	return
 
@@ -340,21 +337,21 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	F14Keys := F14Keys_Letter("U")
 
 
-	; ######## F15 Combinator ########
-	
-	F15Keys := F15Keys_Closing("}", nestLevel)
-
-
-	; ######## F16 Combinator ########
-	
-	F16Keys := F16Keys_Letter("U")
-
-
 	; ######## F17 Combinator ########
+	
+	F17Keys := F17Keys_Closing("}", nestLevel)
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+
+	; ######## F18 Combinator ########
+	
+	F18Keys := F18Keys_Letter("U")
+
+
+	; ######## F19 Combinator ########
+
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -366,18 +363,18 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["U", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["U", "F23 Up"]})
 
 	return
 
@@ -385,54 +382,54 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 
 	; ######## F14 Combinator ########
 
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
 		F14Keys := ["!", "F14 Up"]
 	}
-	else if(GetKeyState("F21"))
-	{			
-		F14Keys := ["Backspace", "!", "Space", "F22 Down", "F21 Up", "F14 Up"]
-	}
 	else if(GetKeyState("F22"))
+	{			
+		F14Keys := ["Backspace", "!", "Space", "F23 Down", "F22 Up", "F14 Up"]
+	}
+	else if(GetKeyState("F23"))
 	{
 		F14Keys := ["Backspace", "!", "Space", "F14 Up"]
 	}
 	else
 	{
-		F14Keys := ["!", "Space", "F22 Down", "F14 Up"]
+		F14Keys := ["!", "Space", "F23 Down", "F14 Up"]
 	}
 	
 
-	; ######## F16 Combinator ########
+	; ######## F18 Combinator ########
 	
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
-		F16Keys := ["!"]
-	}
-	else if(GetKeyState("F21"))
-	{			
-		F16Keys := ["Backspace", "!", "Space", "F22 Down", "F21 Up"]
+		F18Keys := ["!"]
 	}
 	else if(GetKeyState("F22"))
+	{			
+		F18Keys := ["Backspace", "!", "Space", "F23 Down", "F22 Up"]
+	}
+	else if(GetKeyState("F23"))
 	{
-		F16Keys := ["Backspace", "!", "Space"]
+		F18Keys := ["Backspace", "!", "Space"]
 	}
 	else
 	{
-		F16Keys := ["!", "Space", "F22 Down"]
+		F18Keys := ["!", "Space", "F23 Down"]
 	}
 
 
-	; ######## F17 Combinator ########
+	; ######## F19 Combinator ########
 
-	F17Keys := []
+	F19Keys := []
 
-	Loop % F16Keys.Length()
+	Loop % F18Keys.Length()
 	{
-	    	F17Keys.Push(F16Keys[A_Index])
+	    	F19Keys.Push(F18Keys[A_Index])
 	}
 
-	F17Keys.Push("F17 Up")
+	F19Keys.Push("F19 Up")
 	
 	
 	; ######## Backslash Escape ########
@@ -443,19 +440,19 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F17Keys := ["Backspace", shiftChar, "F17 Up", "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F19Keys := ["Backspace", shiftChar, "F19 Up", "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 	
-	dual.comboKey({F13: ["'", "F13 Up"], F14: F14Keys, F16: F16Keys, F17: F17Keys})
+	dual.comboKey({F13: ["'", "F13 Up"], F14: F14Keys, F18: F18Keys, F19: F19Keys})
 
 	return
 
@@ -467,21 +464,21 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 
 	; ######## F13 Combinator ########
 	
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
 		F13Keys := ["%", "F13 Up"]
 	}
-	else if(GetKeyState("F21"))
+	else if(GetKeyState("F22"))
 	{			
 		F13Keys := ["Backspace", "%", "Space", "F13 Up"]
 	}
-	else if(GetKeyState("F22"))
+	else if(GetKeyState("F23"))
 	{
-		F13Keys := ["Backspace", "%", "Space", "F21 Down", "F13 Up", "F22 Up"]
+		F13Keys := ["Backspace", "%", "Space", "F22 Down", "F13 Up", "F23 Up"]
 	}
 	else
 	{
-		F13Keys := ["%", "Space", "F21 Down", "F13 Up"]
+		F13Keys := ["%", "Space", "F22 Down", "F13 Up"]
 	}
 
 
@@ -490,36 +487,36 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	F14Keys := F14Keys_Letter("K")
 
 
-	; ######## F15 Combinator ########
+	; ######## F17 Combinator ########
 	
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
-		F15Keys := "%"
-	}
-	else if(GetKeyState("F21"))
-	{			
-		F15Keys := ["Backspace", "%", "Space"]
+		F17Keys := "%"
 	}
 	else if(GetKeyState("F22"))
+	{			
+		F17Keys := ["Backspace", "%", "Space"]
+	}
+	else if(GetKeyState("F23"))
 	{
-		F15Keys := ["Backspace", "%", "Space", "F21 Down", "F22 Up"]
+		F17Keys := ["Backspace", "%", "Space", "F22 Down", "F23 Up"]
 	}
 	else
 	{
-		F15Keys := ["%", "Space", "F21 Down"]
+		F17Keys := ["%", "Space", "F22 Down"]
 	}
 
 
-	; ######## F16 Combinator ########
+	; ######## F18 Combinator ########
 	
-	F16Keys := F16Keys_Letter("K")
+	F18Keys := F18Keys_Letter("K")
 
 
-	; ######## F17 Combinator ########
+	; ######## F19 Combinator ########
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -531,18 +528,18 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 	
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["K", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["K", "F23 Up"]})
 
 	return
 
@@ -550,13 +547,13 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 
 	; ######## F13 Combinator ########
 	
-	if(GetKeyState("F21"))
+	if(GetKeyState("F22"))
 	{			
-		F13Keys := ["/", "F13 Up", "F21 Up"]
-	}
-	else if(GetKeyState("F22"))
-	{
 		F13Keys := ["/", "F13 Up", "F22 Up"]
+	}
+	else if(GetKeyState("F23"))
+	{
+		F13Keys := ["/", "F13 Up", "F23 Up"]
 	}
 	else
 	{
@@ -569,31 +566,31 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	F14Keys := F14Keys_Letter("D")
 
 
-	; ######## F15 Combinator ########
+	; ######## F17 Combinator ########
 	
-	if(GetKeyState("F21"))
+	if(GetKeyState("F22"))
 	{			
-		F15Keys := ["/", "F21 Up"]
+		F17Keys := ["/", "F22 Up"]
 	}
-	else if(GetKeyState("F22"))
+	else if(GetKeyState("F23"))
 	{
-		F15Keys := ["/", "F22 Up"]
+		F17Keys := ["/", "F23 Up"]
 	}
 	else
 	{
-		F15Keys := "/"
+		F17Keys := "/"
 	}
 
-	; ######## F16 Combinator ########
+	; ######## F18 Combinator ########
 	
-	F16Keys := F16Keys_Letter("D")
+	F18Keys := F18Keys_Letter("D")
 
 
-	; ######## F17 Combinator ########
+	; ######## F19 Combinator ########
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -605,18 +602,18 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 	
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["D", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["D", "F23 Up"]})
 
 	return
 
@@ -624,21 +621,21 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 
 	; ######## F13 Combinator ########
 	
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
 		F13Keys := ["-", "F13 Up"]
 	}
-	else if(GetKeyState("F21"))
+	else if(GetKeyState("F22"))
 	{			
 		F13Keys := ["Backspace", "-", "F13 Up"]
 	}
-	else if(GetKeyState("F22"))
+	else if(GetKeyState("F23"))
 	{
-		F13Keys := ["Backspace", "-", "F21 Down", "F13 Up", "F22 Up"]
+		F13Keys := ["Backspace", "-", "F22 Down", "F13 Up", "F23 Up"]
 	}
 	else
 	{
-		F13Keys := ["-", "F21 Down", "F13 Up"]
+		F13Keys := ["-", "F22 Down", "F13 Up"]
 	}
 
 
@@ -647,36 +644,36 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	F14Keys := F14Keys_Letter("C")
 
 
-	; ######## F15 Combinator ########
+	; ######## F17 Combinator ########
 	
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
-		F15Keys := "-"
-	}
-	else if(GetKeyState("F21"))
-	{			
-		F15Keys := ["Backspace", "-"]
+		F17Keys := "-"
 	}
 	else if(GetKeyState("F22"))
+	{			
+		F17Keys := ["Backspace", "-"]
+	}
+	else if(GetKeyState("F23"))
 	{
-		F15Keys := ["Backspace", "-", "F21 Down", "F22 Up"]
+		F17Keys := ["Backspace", "-", "F22 Down", "F23 Up"]
 	}
 	else
 	{
-		F15Keys := ["-", "F21 Down"]
+		F17Keys := ["-", "F22 Down"]
 	}
 
 
-	; ######## F16 Combinator ########
+	; ######## F18 Combinator ########
 	
-	F16Keys := F16Keys_Letter("C")
+	F18Keys := F18Keys_Letter("C")
 
 
-	; ######## F17 Combinator ########
+	; ######## F19 Combinator ########
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -688,18 +685,18 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 	
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["C", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["C", "F23 Up"]})
 
 	return
 
@@ -719,21 +716,21 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	F14Keys := F14Keys_Letter("L")
 
 
-	; ######## F15 Combinator ########
-	
-	F15Keys := F15Keys_Opening_PassThroughCap("*", "*")
-
-
-	; ######## F16 Combinator ########
-	
-	F16Keys := F16Keys_Letter("L")
-
-
 	; ######## F17 Combinator ########
+	
+	F17Keys := F17Keys_Opening_PassThroughCap("*", "*")
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+
+	; ######## F18 Combinator ########
+	
+	F18Keys := F18Keys_Letter("L")
+
+
+	; ######## F19 Combinator ########
+
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -745,18 +742,18 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 	
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["L", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["L", "F23 Up"]})
 
 	return
 
@@ -776,21 +773,21 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	F14Keys := F14Keys_Letter("P")
 
 
-	; ######## F15 Combinator ########
-	
-	F15Keys := F15Keys_Opening_PassThroughCap("+", "+")
-
-
-	; ######## F16 Combinator ########
-	
-	F16Keys := F16Keys_Letter("P")
-
-
 	; ######## F17 Combinator ########
+	
+	F17Keys := F17Keys_Opening_PassThroughCap("+", "+")
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+
+	; ######## F18 Combinator ########
+	
+	F18Keys := F18Keys_Letter("P")
+
+
+	; ######## F19 Combinator ########
+
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -802,18 +799,18 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 	
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["P", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["P", "F23 Up"]})
 
 	return
 
@@ -833,21 +830,21 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	F14Keys := F14Keys_Letter("Q")
 
 
-	; ######## F15 Combinator ########
-	
-	F15Keys := F15Keys_Opening_PassThroughCap("^", "^")
-
-
-	; ######## F16 Combinator ########
-	
-	F16Keys := F16Keys_Letter("Q")
-
-
 	; ######## F17 Combinator ########
+	
+	F17Keys := F17Keys_Opening_PassThroughCap("^", "^")
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+
+	; ######## F18 Combinator ########
+	
+	F18Keys := F18Keys_Letter("Q")
+
+
+	; ######## F19 Combinator ########
+
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -857,18 +854,18 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	shiftChar := "Q"
 	numChar := "^"
 	
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 	
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["Q", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["Q", "F23 Up"]})
 
 	return
 
@@ -889,13 +886,13 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	{
 		; ######## Backslash Escape ########
 		
-		if(GetKeyState("F18"))
+		if(GetKeyState("F20"))
 		{
-			F21Keys := ["Backspace", "Enter"]
 			F22Keys := ["Backspace", "Enter"]
+			F23Keys := ["Backspace", "Enter"]
 		}
 		
-		dual.comboKey(["Enter", "F22 Down"], {F20: "Enter", F21: ["Backspace", "Enter", "F22 Down", "F21 Up"], F22: ["Backspace", "Enter"]})
+		dual.comboKey(["Enter", "F23 Down"], {F21: "Enter", F22: ["Backspace", "Enter", "F23 Down", "F22 Up"], F23: ["Backspace", "Enter"]})
 	}
 
 	lastEnterDown := currentEnterDown
@@ -906,7 +903,7 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 
 	; ######## Suppress Keypress If Switching Desktops ########
 
-	if(GetKeyState("F14") and GetKeyState("F17"))
+	if(GetKeyState("F14") and GetKeyState("F19"))
 	{
 		return
 	}
@@ -920,23 +917,28 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	; ######## F14 Combinator ########
 	
 	F14Keys := F14Keys_Letter("H")
-
-
-	; ######## F15 Combinator ########
 	
-	F15Keys := F15Keys_Number("2", lastRealKeyDown)
-
-
+	
 	; ######## F16 Combinator ########
 	
-	F16Keys := F16Keys_Letter("H")
+	F16Keys := "#"
 
 
 	; ######## F17 Combinator ########
+	
+	F17Keys := F17Keys_Number("2", lastRealKeyDown)
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+
+	; ######## F18 Combinator ########
+	
+	F18Keys := F18Keys_Letter("H")
+
+
+	; ######## F19 Combinator ########
+
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -948,18 +950,19 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F16Keys := ["Backspace", "#", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 	
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["H", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F16: F16Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["H", "F23 Up"]})
 
 	return
 
@@ -967,7 +970,7 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 
 	; ######## Suppress Keypress If Switching Desktops ########
 
-	if(GetKeyState("F14") and GetKeyState("F17"))
+	if(GetKeyState("F14") and GetKeyState("F19"))
 	{
 		return
 	}
@@ -982,22 +985,27 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	F14Keys := F14Keys_Letter("I")
 
-
-	; ######## F15 Combinator ########
 	
-	F15Keys := F15Keys_Number("3", lastRealKeyDown)
-
-
 	; ######## F16 Combinator ########
 	
-	F16Keys := F16Keys_Letter("I")
-
+	F16Keys := "@"
+	
 
 	; ######## F17 Combinator ########
+	
+	F17Keys := F17Keys_Number("3", lastRealKeyDown)
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+
+	; ######## F18 Combinator ########
+	
+	F18Keys := F18Keys_Letter("I")
+
+
+	; ######## F19 Combinator ########
+
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -1009,18 +1017,19 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F16Keys := ["Backspace", "@", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 	
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["I", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F16: F16Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["I", "F23 Up"]})
 
 	return
 
@@ -1028,7 +1037,7 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 
 	; ######## Suppress Keypress If Switching Desktops ########
 
-	if(GetKeyState("F14") and GetKeyState("F17"))
+	if(GetKeyState("F14") and GetKeyState("F19"))
 	{
 		return
 	}
@@ -1044,21 +1053,21 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	F14Keys := F14Keys_Letter("E")
 
 
-	; ######## F15 Combinator ########
-	
-	F15Keys := F15Keys_Number("5", lastRealKeyDown)
-
-
-	; ######## F16 Combinator ########
-	
-	F16Keys := F16Keys_Letter("E")
-
-
 	; ######## F17 Combinator ########
+	
+	F17Keys := F17Keys_Number("5", lastRealKeyDown)
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+
+	; ######## F18 Combinator ########
+	
+	F18Keys := F18Keys_Letter("E")
+
+
+	; ######## F19 Combinator ########
+
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -1070,18 +1079,18 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 	
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["E", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["E", "F23 Up"]})
 
 	return
 
@@ -1089,7 +1098,7 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 
 	; ######## Suppress Keypress If Switching Desktops ########
 
-	if(GetKeyState("F14") and GetKeyState("F17"))
+	if(GetKeyState("F14") and GetKeyState("F19"))
 	{
 		return
 	}
@@ -1105,21 +1114,21 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	F14Keys := F14Keys_Letter("A")
 
 
-	; ######## F15 Combinator ########
-	
-	F15Keys := F15Keys_Number("7", lastRealKeyDown)
-
-
-	; ######## F16 Combinator ########
-	
-	F16Keys := F16Keys_Letter("A")
-
-
 	; ######## F17 Combinator ########
+	
+	F17Keys := F17Keys_Number("7", lastRealKeyDown)
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+
+	; ######## F18 Combinator ########
+	
+	F18Keys := F18Keys_Letter("A")
+
+
+	; ######## F19 Combinator ########
+
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -1131,18 +1140,18 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 	
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["A", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["A", "F23 Up"]})
 
 	return
 
@@ -1158,37 +1167,37 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	F14Keys := [".", "F14 Up"]
 
 
-	; ######## F15 Combinator ########
-
-	F15Keys := "."
-	
-
-	; ######## F16 Combinator ########
-	
-	F16Keys := "."
-
-
 	; ######## F17 Combinator ########
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+	F17Keys := "."
+	
+
+	; ######## F18 Combinator ########
+	
+	F18Keys := "."
+
+
+	; ######## F19 Combinator ########
+
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
-	; ######## Default Keys and F21 and F22 Combinators ########
+	; ######## Default Keys and F22 and F23 Combinators ########
 
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
 		defaultKeys := ["."]
-		F21Keys := ["."]
 		F22Keys := ["."]
+		F23Keys := ["."]
 	}
 	else
 	{
-		defaultKeys := [".", "Space", "F22 Down"]
-		F21Keys := ["Backspace", ".", "Space", "F22 Down", "F21 Up"]
-		F22Keys := ["Backspace", ".", "Space"]
+		defaultKeys := [".", "Space", "F23 Down"]
+		F22Keys := ["Backspace", ".", "Space", "F23 Down", "F22 Up"]
+		F23Keys := ["Backspace", ".", "Space"]
 	}
 	
 	; ######## Backslash Escape ########
@@ -1199,19 +1208,19 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		defaultKeys := ["Backspace", baseChar, "F18 Up"]
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		defaultKeys := ["Backspace", baseChar, "F20 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 
-	dual.comboKey(defaultKeys, {F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F20: baseChar, F21: F21Keys, F22: F22Keys})
+	dual.comboKey(defaultKeys, {F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F21: baseChar, F22: F22Keys, F23: F23Keys})
 
 	return
 
@@ -1223,7 +1232,7 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 
 	; ######## Suppress Keypress If Switching Desktops ########
 
-	if(GetKeyState("F14") and GetKeyState("F17"))
+	if(GetKeyState("F14") and GetKeyState("F19"))
 	{
 		return
 	}
@@ -1237,23 +1246,40 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	; ######## F14 Combinator ########
 	
 	F14Keys := F14Keys_Letter("M")
-
-
-	; ######## F15 Combinator ########
 	
-	F15Keys := F15Keys_Number("8", lastRealKeyDown)
-
-
+	
 	; ######## F16 Combinator ########
+
+	IniRead, nestLevel, Status.ini, nestVars, nestLevel
+	nestLevel := nestLevel + 1
 	
-	F16Keys := F16Keys_Letter("M")
+	actuallyNeedToWrite := (GetKeyState("F16"))
+	
+	if(actuallyNeedToWrite)
+	{
+		IniWrite, %nestLevel%, Status.ini, nestVars, nestLevel
+		lastOpenPairDown := A_TickCount
+		IniWrite, %lastOpenPairDown%, Status.ini, nestVars, lastOpenPairDown
+	}
+	
+	F16Keys := F16Keys_Opening_NoCap("``", "``")
 
 
 	; ######## F17 Combinator ########
+	
+	F17Keys := F17Keys_Number("8", lastRealKeyDown)
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+
+	; ######## F18 Combinator ########
+	
+	F18Keys := F18Keys_Letter("M")
+
+
+	; ######## F19 Combinator ########
+
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -1265,18 +1291,19 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F16Keys := ["Backspace", "``", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 	
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["M", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F16: F16Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["M", "F23 Up"]})
 
 	return
 
@@ -1284,7 +1311,7 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 
 	; ######## Suppress Keypress If Switching Desktops ########
 
-	if(GetKeyState("F14") and GetKeyState("F17"))
+	if(GetKeyState("F14") and GetKeyState("F19"))
 	{
 		return
 	}
@@ -1300,21 +1327,21 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	F14Keys := F14Keys_Letter("T")
 
 
-	; ######## F15 Combinator ########
-	
-	F15Keys := F15Keys_Number("0", lastRealKeyDown)
-
-
-	; ######## F16 Combinator ########
-	
-	F16Keys := F16Keys_Letter("T")
-
-
 	; ######## F17 Combinator ########
+	
+	F17Keys := F17Keys_Number("0", lastRealKeyDown)
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+
+	; ######## F18 Combinator ########
+	
+	F18Keys := F18Keys_Letter("T")
+
+
+	; ######## F19 Combinator ########
+
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -1326,18 +1353,18 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 	
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["T", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["T", "F23 Up"]})
 
 	return
 
@@ -1345,7 +1372,7 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 
 	; ######## Suppress Keypress If Switching Desktops ########
 
-	if(GetKeyState("F14") and GetKeyState("F17"))
+	if(GetKeyState("F14") and GetKeyState("F19"))
 	{
 		return
 	}
@@ -1361,21 +1388,21 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	F14Keys := F14Keys_Letter("S")
 
 
-	; ######## F15 Combinator ########
-	
-	F15Keys := F15Keys_Number("6", lastRealKeyDown)
-
-
-	; ######## F16 Combinator ########
-	
-	F16Keys := F16Keys_Letter("S")
-
-
 	; ######## F17 Combinator ########
+	
+	F17Keys := F17Keys_Number("6", lastRealKeyDown)
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+
+	; ######## F18 Combinator ########
+	
+	F18Keys := F18Keys_Letter("S")
+
+
+	; ######## F19 Combinator ########
+
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -1387,18 +1414,18 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 	
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["S", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["S", "F23 Up"]})
 
 	return
 
@@ -1406,7 +1433,7 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 
 	; ######## Suppress Keypress If Switching Desktops ########
 
-	if(GetKeyState("F14") and GetKeyState("F17"))
+	if(GetKeyState("F14") and GetKeyState("F19"))
 	{
 		return
 	}
@@ -1422,21 +1449,21 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	F14Keys := F14Keys_Letter("R")
 
 
-	; ######## F15 Combinator ########
-	
-	F15Keys := F15Keys_Number("4", lastRealKeyDown)
-
-
-	; ######## F16 Combinator ########
-	
-	F16Keys := F16Keys_Letter("R")
-
-
 	; ######## F17 Combinator ########
+	
+	F17Keys := F17Keys_Number("4", lastRealKeyDown)
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+
+	; ######## F18 Combinator ########
+	
+	F18Keys := F18Keys_Letter("R")
+
+
+	; ######## F19 Combinator ########
+
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -1448,18 +1475,18 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 	
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["R", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["R", "F23 Up"]})
 
 	return
 
@@ -1467,7 +1494,7 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 
 	; ######## Suppress Keypress If Switching Desktops ########
 
-	if(GetKeyState("F14") and GetKeyState("F17"))
+	if(GetKeyState("F14") and GetKeyState("F19"))
 	{
 		return
 	}
@@ -1481,23 +1508,40 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	; ######## F14 Combinator ########
 	
 	F14Keys := F14Keys_Letter("N")
-
-
-	; ######## F15 Combinator ########
 	
-	F15Keys := F15Keys_Number("1", lastRealKeyDown)
-
-
+	
 	; ######## F16 Combinator ########
+
+	IniRead, nestLevel, Status.ini, nestVars, nestLevel
+	nestLevel := nestLevel + 1
 	
-	F16Keys := F16Keys_Letter("N")
+	actuallyNeedToWrite := (GetKeyState("F16"))
+	
+	if(actuallyNeedToWrite)
+	{
+		IniWrite, %nestLevel%, Status.ini, nestVars, nestLevel
+		lastOpenPairDown := A_TickCount
+		IniWrite, %lastOpenPairDown%, Status.ini, nestVars, lastOpenPairDown
+	}
+	
+	F16Keys := F16Keys_Opening_PassThroughCap("~", "~")
 
 
 	; ######## F17 Combinator ########
+	
+	F17Keys := F17Keys_Number("1", lastRealKeyDown)
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+
+	; ######## F18 Combinator ########
+	
+	F18Keys := F18Keys_Letter("N")
+
+
+	; ######## F19 Combinator ########
+
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -1509,18 +1553,19 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F16Keys := ["Backspace", "~", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 	
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["N", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F16: F16Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["N", "F23 Up"]})
 
 	return
 
@@ -1528,21 +1573,21 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 
 	; ######## F13 Combinator ########
 	
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
 		F13Keys := ["|", "F13 Up"]
 	}
-	else if(GetKeyState("F21"))
+	else if(GetKeyState("F22"))
 	{			
 		F13Keys := ["|", "Space", "F13 Up"]
 	}
-	else if(GetKeyState("F22"))
+	else if(GetKeyState("F23"))
 	{
-		F13Keys := ["|", "Space", "F21 Down", "F13 Up", "F22 Up"]
+		F13Keys := ["|", "Space", "F22 Down", "F13 Up", "F23 Up"]
 	}
 	else
 	{
-		F13Keys := ["Space", "|", "Space", "F21 Down", "F13 Up"]
+		F13Keys := ["Space", "|", "Space", "F22 Down", "F13 Up"]
 	}
 
 
@@ -1551,36 +1596,36 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	F14Keys := F14Keys_Letter("V")
 
 
-	; ######## F15 Combinator ########
+	; ######## F17 Combinator ########
 	
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
-		F15Keys := "|"
-	}
-	else if(GetKeyState("F21"))
-	{			
-		F15Keys := ["|", "Space"]
+		F17Keys := "|"
 	}
 	else if(GetKeyState("F22"))
+	{			
+		F17Keys := ["|", "Space"]
+	}
+	else if(GetKeyState("F23"))
 	{
-		F15Keys := ["|", "Space", "F21 Down", "F22 Up"]
+		F17Keys := ["|", "Space", "F22 Down", "F23 Up"]
 	}
 	else
 	{
-		F15Keys := ["Space", "|", "Space", "F21 Down"]
+		F17Keys := ["Space", "|", "Space", "F22 Down"]
 	}
 
 
-	; ######## F16 Combinator ########
+	; ######## F18 Combinator ########
 	
-	F16Keys := F16Keys_Letter("V")
+	F18Keys := F18Keys_Letter("V")
 
 
-	; ######## F17 Combinator ########
+	; ######## F19 Combinator ########
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -1592,18 +1637,18 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 	
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["V", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["V", "F23 Up"]})
 
 	return
 
@@ -1618,21 +1663,21 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 
 	; ######## F13 Combinator ########
 	
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
-		F13Keys := ["$", "F13 Up"]
-	}
-	else if(GetKeyState("F21"))
-	{			
 		F13Keys := ["$", "F13 Up"]
 	}
 	else if(GetKeyState("F22"))
+	{			
+		F13Keys := ["$", "F13 Up"]
+	}
+	else if(GetKeyState("F23"))
 	{
-		F13Keys := ["$", "F21 Down", "F13 Up", "F22 Up"]
+		F13Keys := ["$", "F22 Down", "F13 Up", "F23 Up"]
 	}
 	else
 	{
-		F13Keys := ["Space", "$", "F21 Down", "F13 Up"]
+		F13Keys := ["Space", "$", "F22 Down", "F13 Up"]
 	}
 
 
@@ -1641,36 +1686,36 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	F14Keys := F14Keys_Letter("X")
 
 
-	; ######## F15 Combinator ########
+	; ######## F17 Combinator ########
 	
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
-		F15Keys := "$"
-	}
-	else if(GetKeyState("F21"))
-	{			
-		F15Keys := "$"
+		F17Keys := "$"
 	}
 	else if(GetKeyState("F22"))
+	{			
+		F17Keys := "$"
+	}
+	else if(GetKeyState("F23"))
 	{
-		F15Keys := ["$", "F21 Down", "F22 Up"]
+		F17Keys := ["$", "F22 Down", "F23 Up"]
 	}
 	else
 	{
-		F15Keys := ["Space", "$", "F21 Down"]
+		F17Keys := ["Space", "$", "F22 Down"]
 	}
 
 
-	; ######## F16 Combinator ########
+	; ######## F18 Combinator ########
 	
-	F16Keys := F16Keys_Letter("X")
+	F18Keys := F18Keys_Letter("X")
 
 
-	; ######## F17 Combinator ########
+	; ######## F19 Combinator ########
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -1682,18 +1727,18 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 	
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["X", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["X", "F23 Up"]})
 
 	return
 
@@ -1701,63 +1746,63 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 
 	; ######## F14 Combinator ########
 
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
 		F14Keys := [";", "F14 Up"]
 	}
-	else if(GetKeyState("F21"))
+	else if(GetKeyState("F22"))
 	{			
 		F14Keys := ["Backspace", ";", "Space", "F14 Up"]
 	}
-	else if(GetKeyState("F22"))
+	else if(GetKeyState("F23"))
 	{
-		F14Keys := ["Backspace", ";", "Space", "F21 Down", "F22 Up", "F14 Up"]
+		F14Keys := ["Backspace", ";", "Space", "F22 Down", "F23 Up", "F14 Up"]
 	}
 	else
 	{
-		F14Keys := [";", "Space", "F21 Down", "F14 Up"]
+		F14Keys := [";", "Space", "F22 Down", "F14 Up"]
 	}
 
 
-	; ######## F16 Combinator ########
+	; ######## F18 Combinator ########
 	
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
-		F16Keys := [";"]
-	}
-	else if(GetKeyState("F21"))
-	{			
-		F16Keys := ["Backspace", ";", "Space"]
+		F18Keys := [";"]
 	}
 	else if(GetKeyState("F22"))
+	{			
+		F18Keys := ["Backspace", ";", "Space"]
+	}
+	else if(GetKeyState("F23"))
 	{
-		F16Keys := ["Backspace", ";", "Space", "F21 Down", "F22 Up"]
+		F18Keys := ["Backspace", ";", "Space", "F22 Down", "F23 Up"]
 	}
 	else
 	{
-		F16Keys := [";", "Space", "F21 Down"]
+		F18Keys := [";", "Space", "F22 Down"]
 	}
 
 
-	; ######## F17 Combinator ########
+	; ######## F19 Combinator ########
 
-	F17Keys := []
+	F19Keys := []
 
-	Loop % F16Keys.Length()
+	Loop % F18Keys.Length()
 	{
-	    	F17Keys.Push(F16Keys[A_Index])
+	    	F19Keys.Push(F18Keys[A_Index])
 	}
 
-	F17Keys.Push("F17 Up")
+	F19Keys.Push("F19 Up")
 
 
-	; ######## Default Keys and F21 and F22 Combinators ########
+	; ######## Default Keys and F22 and F23 Combinators ########
 
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
 		defaultKeys := [""""]
-		F21Keys := [""""]
 		F22Keys := [""""]
+		F23Keys := [""""]
 	}
 	else
 	{
@@ -1769,7 +1814,7 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 			inQuote := false
 			nestLevel := nestLevel - 1
 			
-			actuallyNeedToWrite := !(GetKeyState("F14") or GetKeyState("F16") or (GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15"))))
+			actuallyNeedToWrite := !(GetKeyState("F14") or GetKeyState("F18") or (GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17"))))
 			
 			if(actuallyNeedToWrite)
 			{
@@ -1779,15 +1824,15 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 		
 			if(nestLevel > 0)
 			{
-				defaultKeys := ["Right", "Space", "F21 Down"]
-				F21Keys := ["Backspace", "Right", "Space"]
+				defaultKeys := ["Right", "Space", "F22 Down"]
 				F22Keys := ["Backspace", "Right", "Space"]
+				F23Keys := ["Backspace", "Right", "Space"]
 			}
 			else
 			{
-				defaultKeys := ["Right", "Space", "F21 Down", "F23 Up"]
-				F21Keys := ["Backspace", "Right", "Space", "F23 Up"]
-				F22Keys := ["Backspace", "Right", "Space" "F23 Up"]
+				defaultKeys := ["Right", "Space", "F22 Down", "F24 Up"]
+				F22Keys := ["Backspace", "Right", "Space", "F24 Up"]
+				F23Keys := ["Backspace", "Right", "Space" "F24 Up"]
 			}
 		}
 		else
@@ -1795,7 +1840,7 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 			inQuote := true
 			nestLevel := nestLevel + 1
 			
-			actuallyNeedToWrite := !(GetKeyState("F14") or GetKeyState("F16") or (GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15"))))
+			actuallyNeedToWrite := !(GetKeyState("F14") or GetKeyState("F18") or (GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17"))))
 			
 			if(actuallyNeedToWrite)
 			{
@@ -1805,17 +1850,17 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 				IniWrite, %lastOpenPairDown%, Status.ini, nestVars, lastOpenPairDown
 			}
 	
-			if(GetKeyState("F23"))
+			if(GetKeyState("F24"))
 			{
-				defaultKeys := ["Space", """", """", "Left", "F21 Down"]
-				F21Keys := ["""", """", "Left"]
+				defaultKeys := ["Space", """", """", "Left", "F22 Down"]
 				F22Keys := ["""", """", "Left"]
+				F23Keys := ["""", """", "Left"]
 			}
 			else
 			{
-				defaultKeys := ["Space", """", """", "Left", "F21 Down", "F23 Down"]
-				F21Keys := ["""", """", "Left", "F23 Down"]
-				F22Keys := ["""", """", "Left", "F23 Down"]
+				defaultKeys := ["Space", """", """", "Left", "F22 Down", "F24 Down"]
+				F22Keys := ["""", """", "Left", "F24 Down"]
+				F23Keys := ["""", """", "Left", "F24 Down"]
 			}
 		}
 	}
@@ -1823,26 +1868,26 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 
 	; ######## F13 Combinator ########
 	
-	F13Keys := F13Keys_PuncCombinator(defaultKeys, F21Keys, F22Keys)
+	F13Keys := F13Keys_PuncCombinator(defaultKeys, F22Keys, F23Keys)
 
 
-	; ######## F15 Combinator ########
+	; ######## F17 Combinator ########
 	
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
-		F15Keys := """"
-	}
-	else if(GetKeyState("F21"))
-	{			
-		F15Keys := F21Keys
+		F17Keys := """"
 	}
 	else if(GetKeyState("F22"))
+	{			
+		F17Keys := F22Keys
+	}
+	else if(GetKeyState("F23"))
 	{
-		F15Keys := F22Keys
+		F17Keys := F23Keys
 	}
 	else
 	{
-		F15Keys := defaultKeys
+		F17Keys := defaultKeys
 	}
 
 	
@@ -1854,20 +1899,20 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 	
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		defaultKeys := ["Backspace", baseChar, "F18 Up"]
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F17Keys := ["Backspace", shiftChar, "F17 Up", "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		defaultKeys := ["Backspace", baseChar, "F20 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F19Keys := ["Backspace", shiftChar, "F19 Up", "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 	
 
-	dual.comboKey(defaultKeys, {F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F17: F17Keys, F20: baseChar, F21: F21Keys, F22: F22Keys})
+	dual.comboKey(defaultKeys, {F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F19: F19Keys, F21: baseChar, F22: F22Keys, F23: F23Keys})
 
 	return
 
@@ -1875,64 +1920,64 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 
 	; ######## F14 Combinator ########
 
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
 		F14Keys := ["—", "F14 Up"]
 	}
-	else if(GetKeyState("F21"))
+	else if(GetKeyState("F22"))
 	{			
 		F14Keys := ["Backspace", "—", "F14 Up"]
 	}
-	else if(GetKeyState("F22"))
+	else if(GetKeyState("F23"))
 	{
-		F14Keys := ["Backspace", "—", "F21 Down", "F22 Up", "F14 Up"]
+		F14Keys := ["Backspace", "—", "F22 Down", "F23 Up", "F14 Up"]
 	}
 	else
 	{
-		F14Keys := ["—", "F21 Down", "F14 Up"]
+		F14Keys := ["—", "F22 Down", "F14 Up"]
 	}
 
 
-	; ######## F16 Combinator ########
+	; ######## F18 Combinator ########
 	
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
-		F16Keys := ["—"]
-	}
-	else if(GetKeyState("F21"))
-	{			
-		F16Keys := ["Backspace", "—"]
+		F18Keys := ["—"]
 	}
 	else if(GetKeyState("F22"))
+	{			
+		F18Keys := ["Backspace", "—"]
+	}
+	else if(GetKeyState("F23"))
 	{
-		F16Keys := ["Backspace", "—", "F21 Down", "F22 Up"]
+		F18Keys := ["Backspace", "—", "F22 Down", "F23 Up"]
 	}
 	else
 	{
-		F16Keys := ["—", "F21 Down"]
+		F18Keys := ["—", "F22 Down"]
 	}
 
 
-	; ######## F17 Combinator ########
+	; ######## F19 Combinator ########
 
-	F17Keys := []
+	F19Keys := []
 
-	Loop % F16Keys.Length()
+	Loop % F18Keys.Length()
 	{
-	    	F17Keys.Push(F16Keys[A_Index])
+	    	F19Keys.Push(F18Keys[A_Index])
 	}
 
-	F17Keys.Push("F17 Up")
+	F19Keys.Push("F19 Up")
 
 
-	; ######## Default Keys and F21 and F22 Combinators ########
+	; ######## Default Keys and F22 and F23 Combinators ########
 
-	if(GetKeyState("F23"))
+	if(GetKeyState("F24"))
 	{
 		IniRead, nestLevel, Status.ini, nestVars, nestLevel
 		nestLevel := nestLevel - 1
 		
-		actuallyNeedToWrite := !(GetKeyState("F14") or GetKeyState("F16") or (GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15"))))
+		actuallyNeedToWrite := !(GetKeyState("F14") or GetKeyState("F18") or (GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17"))))
 			
 		if(actuallyNeedToWrite)
 		{
@@ -1942,47 +1987,47 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 		if(nestLevel > 0)
 
 		{
-			defaultKeys := ["Right", "Space", "F21 Down"]
-			F21Keys := ["Backspace", "Right", "Space"]
+			defaultKeys := ["Right", "Space", "F22 Down"]
 			F22Keys := ["Backspace", "Right", "Space"]
+			F23Keys := ["Backspace", "Right", "Space"]
 		}
 		else
 		{
-			defaultKeys := ["Right", "Space", "F21 Down", "F23 Up"]
-			F21Keys := ["Backspace", "Right", "Space", "F23 Up"]
-			F22Keys := ["Backspace", "Right", "Space" "F23 Up"]
+			defaultKeys := ["Right", "Space", "F22 Down", "F24 Up"]
+			F22Keys := ["Backspace", "Right", "Space", "F24 Up"]
+			F23Keys := ["Backspace", "Right", "Space" "F24 Up"]
 		}
 	}
 	else
 	{
 		defaultKeys := [")"]
-		F21Keys := [")"]
 		F22Keys := [")"]
+		F23Keys := [")"]
 	}
 
 
 	; ######## F13 Combinator ########
 	
-	F13Keys := F13Keys_PuncCombinator(defaultKeys, F21Keys, F22Keys)
+	F13Keys := F13Keys_PuncCombinator(defaultKeys, F22Keys, F23Keys)
 
 
-	; ######## F15 Combinator ########
+	; ######## F17 Combinator ########
 	
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
-		F15Keys := ")"
-	}
-	else if(GetKeyState("F21"))
-	{			
-		F15Keys := F21Keys
+		F17Keys := ")"
 	}
 	else if(GetKeyState("F22"))
+	{			
+		F17Keys := F22Keys
+	}
+	else if(GetKeyState("F23"))
 	{
-		F15Keys := F22Keys
+		F17Keys := F23Keys
 	}
 	else
 	{
-		F15Keys := defaultKeys
+		F17Keys := defaultKeys
 	}
 	
 	
@@ -1994,20 +2039,20 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		defaultKeys := ["Backspace", baseChar, "F18 Up"]
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F17Keys := ["Backspace", shiftChar, "F17 Up", "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		defaultKeys := ["Backspace", baseChar, "F20 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F19Keys := ["Backspace", shiftChar, "F19 Up", "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 
-	dual.comboKey(defaultKeys, {F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F17: F17Keys, F20: baseChar, F21: F21Keys, F22: F22Keys})
+	dual.comboKey(defaultKeys, {F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F19: F19Keys, F21: baseChar, F22: F22Keys, F23: F23Keys})
 
 	return
 
@@ -2015,7 +2060,7 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 
 	; ######## F14 Combinator ########
 
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
 		F14Keys := ["_", "F14 Up"]
 	}
@@ -2024,7 +2069,7 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 			IniRead, nestLevel, Status.ini, nestVars, nestLevel
 			nestLevel := nestLevel + 1
 			
-			actuallyNeedToWrite := GetKeyState("F14") or GetKeyState("F16") or (GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+			actuallyNeedToWrite := GetKeyState("F14") or GetKeyState("F18") or (GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 
 			if(actuallyNeedToWrite)
 			{
@@ -2033,42 +2078,42 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 				IniWrite, %lastOpenPairDown%, Status.ini, nestVars, lastOpenPairDown
 			}
 			
-		if(GetKeyState("F23"))
+		if(GetKeyState("F24"))
 		{
-			if(GetKeyState("F21"))
+			if(GetKeyState("F22"))
 			{			
 				F14Keys := ["_", "_", "Left", "F14 Up"]
 			}
-			else if(GetKeyState("F22"))
+			else if(GetKeyState("F23"))
 			{
 				F14Keys := ["_", "_", "Left", "F14 Up"]
 			}
 			else
 			{
-				F14Keys := ["Space", "_", "_", "Left", "F21 Down", "F14 Up"]
+				F14Keys := ["Space", "_", "_", "Left", "F22 Down", "F14 Up"]
 			}
 		}
 		else
 		{
-			if(GetKeyState("F21"))
+			if(GetKeyState("F22"))
 			{			
-				F14Keys := ["_", "_", "Left", "F23 Down", "F14 Up"]
+				F14Keys := ["_", "_", "Left", "F24 Down", "F14 Up"]
 			}
-			else if(GetKeyState("F22"))
+			else if(GetKeyState("F23"))
 			{
-				F14Keys := ["_", "_", "Left", "F23 Down", "F14 Up"]
+				F14Keys := ["_", "_", "Left", "F24 Down", "F14 Up"]
 			}
 			else
 			{
-				F14Keys := ["Space", "_", "_", "Left", "F21 Down", "F23 Down", "F14 Up"]
+				F14Keys := ["Space", "_", "_", "Left", "F22 Down", "F24 Down", "F14 Up"]
 			}
 		}
 	}
 
 
-	; ######## F16 Combinator ########
+	; ######## F18 Combinator ########
 
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
 		F14Keys := ["_"]
 	}
@@ -2077,7 +2122,7 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 			IniRead, nestLevel, Status.ini, nestVars, nestLevel
 			nestLevel := nestLevel + 1
 			
-			actuallyNeedToWrite := GetKeyState("F14") or GetKeyState("F16") or (GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+			actuallyNeedToWrite := GetKeyState("F14") or GetKeyState("F18") or (GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 
 			if(actuallyNeedToWrite)
 			{
@@ -2086,89 +2131,89 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 				IniWrite, %lastOpenPairDown%, Status.ini, nestVars, lastOpenPairDown
 			}
 			
-		if(GetKeyState("F23"))
+		if(GetKeyState("F24"))
 		{
-			if(GetKeyState("F21"))
+			if(GetKeyState("F22"))
 			{			
-				F16Keys := ["_", "_", "Left"]
+				F18Keys := ["_", "_", "Left"]
 			}
-			else if(GetKeyState("F22"))
+			else if(GetKeyState("F23"))
 			{
-				F16Keys := ["_", "_", "Left"]
+				F18Keys := ["_", "_", "Left"]
 			}
 			else
 			{
-				F16Keys := ["Space", "_", "_", "Left", "F21 Down"]
+				F18Keys := ["Space", "_", "_", "Left", "F22 Down"]
 			}
 		}
 		else
 		{
-			if(GetKeyState("F21"))
+			if(GetKeyState("F22"))
 			{			
-				F16Keys := ["_", "_", "Left", "F23 Down"]
+				F18Keys := ["_", "_", "Left", "F24 Down"]
 			}
-			else if(GetKeyState("F22"))
+			else if(GetKeyState("F23"))
 			{
-				F16Keys := ["_", "_", "Left", "F23 Down"]
+				F18Keys := ["_", "_", "Left", "F24 Down"]
 			}
 			else
 			{
-				F16Keys := ["Space", "_", "_", "Left", "F21 Down", "F23 Down"]
+				F18Keys := ["Space", "_", "_", "Left", "F22 Down", "F24 Down"]
 			}
 		}
 	}
 
 
-	; ######## F17 Combinator ########
+	; ######## F19 Combinator ########
 	
-	F17Keys := []
+	F19Keys := []
 
-	Loop % F16Keys.Length()
+	Loop % F18Keys.Length()
 	{
-	    	F17Keys.Push(F16Keys[A_Index])
+	    	F19Keys.Push(F18Keys[A_Index])
 	}
 
-	F17Keys.Push("F17 Up")
+	F19Keys.Push("F19 Up")
 
 
-	; ######## Default Keys and F21 and F22 Combinators ########
+	; ######## Default Keys and F22 and F23 Combinators ########
 
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
 		defaultKeys := [","]
-		F21Keys := [","]
 		F22Keys := [","]
+		F23Keys := [","]
 	}
 	else
 	{	
-		defaultKeys := [",", "Space", "F21 Down"]
-		F21Keys := ["Backspace", ",", "Space"]
-		F22Keys := ["Backspace", ",", "F21 Down", "F22 Up"]
+		defaultKeys := [",", "Space", "F22 Down"]
+		F22Keys := ["Backspace", ",", "Space"]
+		F23Keys := ["Backspace", ",", "F22 Down", "F23 Up"]
 	}
 
 
 	; ######## F13 Combinator ########
 	
-	F13Keys := F13Keys_PuncCombinator(defaultKeys, F21Keys, F22Keys)
+	F13Keys := F13Keys_PuncCombinator(defaultKeys, F22Keys, F23Keys)
 
 
-	; ######## F15 Combinator ########
+	; ######## F17 Combinator ########
 	
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
-		F15Keys := ","
-	}
-	else if(GetKeyState("F21"))
-	{			
-		F15Keys := F21Keys
+		F17Keys := ","
 	}
 	else if(GetKeyState("F22"))
+	{			
+		F17Keys := F22Keys
+	}
+	else if(GetKeyState("F23"))
 	{
-		F15Keys := F22Keys
+		F17Keys := F23Keys
 	}
 	else
 	{
-		F15Keys := defaultKeys
+		F17Keys := defaultKeys
 	}
 	
 	
@@ -2180,20 +2225,20 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		defaultKeys := ["Backspace", baseChar, "F18 Up"]
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F17Keys := ["Backspace", shiftChar, "F17 Up", "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		defaultKeys := ["Backspace", baseChar, "F20 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F19Keys := ["Backspace", shiftChar, "F19 Up", "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 
-	dual.comboKey(defaultKeys, {F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F17: F17Keys, F20: baseChar, F21: F21Keys, F22: F22Keys})
+	dual.comboKey(defaultKeys, {F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F19: F19Keys, F21: baseChar, F22: F22Keys, F23: F23Keys})
 
 	return
 
@@ -2201,70 +2246,70 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 
 	; ######## F14 Combinator ########
 
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
 		F14Keys := ["?", "F14 Up"]
 	}
-	else if(GetKeyState("F21"))
-	{			
-		F14Keys := ["Backspace", "?", "Space", "F22 Down", "F21 Up", "F14 Up"]
-	}
 	else if(GetKeyState("F22"))
+	{			
+		F14Keys := ["Backspace", "?", "Space", "F23 Down", "F22 Up", "F14 Up"]
+	}
+	else if(GetKeyState("F23"))
 	{
 		F14Keys := ["Backspace", "?", "Space", "F14 Up"]
 	}
 	else
 	{
-		F14Keys := ["?", "Space", "F22 Down", "F14 Up"]
+		F14Keys := ["?", "Space", "F23 Down", "F14 Up"]
 	}
 
 
-	; ######## F16 Combinator ########
+	; ######## F18 Combinator ########
 
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
-		F16Keys := ["?"]
-	}
-	else if(GetKeyState("F21"))
-	{			
-		F16Keys := ["Backspace", "?", "Space", "F22 Down", "F21 Up"]
+		F18Keys := ["?"]
 	}
 	else if(GetKeyState("F22"))
+	{			
+		F18Keys := ["Backspace", "?", "Space", "F23 Down", "F22 Up"]
+	}
+	else if(GetKeyState("F23"))
 	{
-		F16Keys := ["Backspace", "?", "Space"]
+		F18Keys := ["Backspace", "?", "Space"]
 	}
 	else
 	{
-		F16Keys := ["?", "Space", "F22 Down"]
+		F18Keys := ["?", "Space", "F23 Down"]
 	}
 
 
-	; ######## F17 Combinator ########
+	; ######## F19 Combinator ########
 
-	F17Keys := []
+	F19Keys := []
 
-	Loop % F16Keys.Length()
+	Loop % F18Keys.Length()
 	{
-	    	F17Keys.Push(F16Keys[A_Index])
+	    	F19Keys.Push(F18Keys[A_Index])
 	}
 
-	F17Keys.Push("F17 Up")
+	F19Keys.Push("F19 Up")
 
 
-	; ######## Default Keys and F21 and F22 Combinators ########
+	; ######## Default Keys and F22 and F23 Combinators ########
 
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
 		defaultKeys := ["("]
-		F21Keys := ["("]
 		F22Keys := ["("]
+		F23Keys := ["("]
 	}
 	else
 	{
 		IniRead, nestLevel, Status.ini, nestVars, nestLevel
 		nestLevel := nestLevel + 1
 		
-		actuallyNeedToWrite := !(GetKeyState("F14") or GetKeyState("F16") or (GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15"))))
+		actuallyNeedToWrite := !(GetKeyState("F14") or GetKeyState("F18") or (GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17"))))
 			
 		if(actuallyNeedToWrite)
 		{
@@ -2273,43 +2318,43 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 			IniWrite, %lastOpenPairDown%, Status.ini, nestVars, lastOpenPairDown
 		}
 		
-		if(GetKeyState("F23"))
+		if(GetKeyState("F24"))
 		{
-			defaultKeys := ["Space", "(", ")", "Left", "F21 Down"]
-			F21Keys := ["(", ")", "Left"]
+			defaultKeys := ["Space", "(", ")", "Left", "F22 Down"]
 			F22Keys := ["(", ")", "Left"]
+			F23Keys := ["(", ")", "Left"]
 		}
 		else
 		{
-			defaultKeys := ["Space", "(", ")", "Left", "F21 Down", "F23 Down"]
-			F21Keys := ["(", ")", "Left", "F23 Down"]
-			F22Keys := ["(", ")", "Left", "F23 Down"]
+			defaultKeys := ["Space", "(", ")", "Left", "F22 Down", "F24 Down"]
+			F22Keys := ["(", ")", "Left", "F24 Down"]
+			F23Keys := ["(", ")", "Left", "F24 Down"]
 		}
 	}
 
 
 	; ######## F13 Combinator ########
 	
-	F13Keys := F13Keys_PuncCombinator(defaultKeys, F21Keys, F22Keys)
+	F13Keys := F13Keys_PuncCombinator(defaultKeys, F22Keys, F23Keys)
 
 
-	; ######## F15 Combinator ########
+	; ######## F17 Combinator ########
 	
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
-		F15Keys := "("
-	}
-	else if(GetKeyState("F21"))
-	{			
-		F15Keys := F21Keys
+		F17Keys := "("
 	}
 	else if(GetKeyState("F22"))
+	{			
+		F17Keys := F22Keys
+	}
+	else if(GetKeyState("F23"))
 	{
-		F15Keys := F22Keys
+		F17Keys := F23Keys
 	}
 	else
 	{
-		F15Keys := defaultKeys
+		F17Keys := defaultKeys
 	}
 
 	
@@ -2321,20 +2366,20 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		defaultKeys := ["Backspace", baseChar, "F18 Up"]
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F17Keys := ["Backspace", shiftChar, "F17 Up", "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		defaultKeys := ["Backspace", baseChar, "F20 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F19Keys := ["Backspace", shiftChar, "F19 Up", "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 	
 
-	dual.comboKey(defaultKeys, {F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F17: F17Keys, F20: baseChar, F21: F21Keys, F22: F22Keys})
+	dual.comboKey(defaultKeys, {F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F19: F19Keys, F21: baseChar, F22: F22Keys, F23: F23Keys})
 
 	return
 
@@ -2346,7 +2391,7 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 
 	; ######## Suppress Keypress If Switching Desktops ########
 
-	if(GetKeyState("F14") and GetKeyState("F17"))
+	if(GetKeyState("F14") and GetKeyState("F19"))
 	{
 		return
 	}
@@ -2362,21 +2407,21 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	F14Keys := F14Keys_Letter("W")
 
 
-	; ######## F15 Combinator ########
-	
-	F15Keys := F15Keys_Number("9", lastRealKeyDown)
-
-
-	; ######## F16 Combinator ########
-	
-	F16Keys := F16Keys_Letter("W")
-
-
 	; ######## F17 Combinator ########
+	
+	F17Keys := F17Keys_Number("9", lastRealKeyDown)
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+
+	; ######## F18 Combinator ########
+	
+	F18Keys := F18Keys_Letter("W")
+
+
+	; ######## F19 Combinator ########
+
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -2388,18 +2433,18 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 	
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["W", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["W", "F23 Up"]})
 
 	return
 
@@ -2419,21 +2464,21 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	F14Keys := F14Keys_Letter("G")
 
 
-	; ######## F15 Combinator ########
-	
-	F15Keys := F15Keys_Opening_NoCap("=", "=")
-
-
-	; ######## F16 Combinator ########
-	
-	F16Keys := F16Keys_Letter("G")
-
-
 	; ######## F17 Combinator ########
+	
+	F17Keys := F17Keys_Opening_NoCap("=", "=")
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+
+	; ######## F18 Combinator ########
+	
+	F18Keys := F18Keys_Letter("G")
+
+
+	; ######## F19 Combinator ########
+
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -2445,18 +2490,18 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 	
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["G", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["G", "F23 Up"]})
 
 	return
 
@@ -2476,21 +2521,21 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	F14Keys := F14Keys_Letter("F")
 
 
-	; ######## F15 Combinator ########
-	
-	F15Keys := F15Keys_Opening_NoCap("<", ">")
-
-
-	; ######## F16 Combinator ########
-	
-	F16Keys := F16Keys_Letter("F")
-
-
 	; ######## F17 Combinator ########
+	
+	F17Keys := F17Keys_Opening_NoCap("<", ">")
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+
+	; ######## F18 Combinator ########
+	
+	F18Keys := F18Keys_Letter("F")
+
+
+	; ######## F19 Combinator ########
+
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -2502,18 +2547,18 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 	
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["F", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["F", "F23 Up"]})
 
 	return
 
@@ -2533,21 +2578,21 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	F14Keys := F14Keys_Letter("J")
 
 
-	; ######## F15 Combinator ########
-	
-	F15Keys := F15Keys_Closing(">", nestLevel)
-
-
-	; ######## F16 Combinator ########
-	
-	F16Keys := F16Keys_Letter("J")
-
-
 	; ######## F17 Combinator ########
+	
+	F17Keys := F17Keys_Closing(">", nestLevel)
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+
+	; ######## F18 Combinator ########
+	
+	F18Keys := F18Keys_Letter("J")
+
+
+	; ######## F19 Combinator ########
+
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -2559,18 +2604,18 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 	
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["J", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["J", "F23 Up"]})
 
 	return
 
@@ -2578,21 +2623,21 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 
 	; ######## F13 Combinator ########
 	
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
-		F13Keys := ["&", "F13 Up"]
-	}
-	else if(GetKeyState("F21"))
-	{			
 		F13Keys := ["&", "F13 Up"]
 	}
 	else if(GetKeyState("F22"))
+	{			
+		F13Keys := ["&", "F13 Up"]
+	}
+	else if(GetKeyState("F23"))
 	{
-		F13Keys := ["&", "F21 Down", "F13 Up", "F22 Up"]
+		F13Keys := ["&", "F22 Down", "F13 Up", "F23 Up"]
 	}
 	else
 	{
-		F13Keys := ["Space", "&", "F21 Down", "F13 Up"]
+		F13Keys := ["Space", "&", "F22 Down", "F13 Up"]
 	}
 
 
@@ -2601,36 +2646,36 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	F14Keys := F14Keys_Letter("Z")
 
 
-	; ######## F15 Combinator ########
+	; ######## F17 Combinator ########
 	
-	if(GetKeyState("F20"))
+	if(GetKeyState("F21"))
 	{
-		F15Keys := "&"
-	}
-	else if(GetKeyState("F21"))
-	{			
-		F15Keys := "&"
+		F17Keys := "&"
 	}
 	else if(GetKeyState("F22"))
+	{			
+		F17Keys := "&"
+	}
+	else if(GetKeyState("F23"))
 	{
-		F15Keys := ["&", "F21 Down", "F22 Up"]
+		F17Keys := ["&", "F22 Down", "F23 Up"]
 	}
 	else
 	{
-		F15Keys := ["Space", "&", "F21 Down"]
+		F17Keys := ["Space", "&", "F22 Down"]
 	}
 
 
-	; ######## F16 Combinator ########
+	; ######## F18 Combinator ########
 	
-	F16Keys := F16Keys_Letter("Z")
+	F18Keys := F18Keys_Letter("Z")
 
 
-	; ######## F17 Combinator ########
+	; ######## F19 Combinator ########
 
-	if(GetKeyState("F17") and !(GetKeyState("F13") or GetKeyState("F15")))
+	if(GetKeyState("F19") and !(GetKeyState("F13") or GetKeyState("F17")))
 	{
-		SendInput {F17 Up}
+		SendInput {F19 Up}
 	}
 	
 	
@@ -2642,18 +2687,18 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	
 
-	if(GetKeyState("F18"))
+	if(GetKeyState("F20"))
 	{
-		F13Keys := ["Backspace", numChar, "F13 Up", "F18 Up"]
-		F14Keys := ["Backspace", shiftChar, "F14 Up", "F18 Up"]
-		F15Keys := ["Backspace", numChar, "F18 Up"]
-		F16Keys := ["Backspace", shiftChar, "F18 Up"]
-		F21Keys := ["Backspace", baseChar, "F18 Up", "F21 Up"]
-		F22Keys := ["Backspace", baseChar, "F18 Up", "F22 Up"]
+		F13Keys := ["Backspace", numChar, "F13 Up", "F20 Up"]
+		F14Keys := ["Backspace", shiftChar, "F14 Up", "F20 Up"]
+		F17Keys := ["Backspace", numChar, "F20 Up"]
+		F18Keys := ["Backspace", shiftChar, "F20 Up"]
+		F22Keys := ["Backspace", baseChar, "F20 Up", "F22 Up"]
+		F23Keys := ["Backspace", baseChar, "F20 Up", "F23 Up"]
 	}
 
 	
-	dual.comboKey({F13: F13Keys, F14: F14Keys, F15: F15Keys, F16: F16Keys, F21: [A_ThisHotkey, "F21 Up"], F22: ["Z", "F22 Up"]})
+	dual.comboKey({F13: F13Keys, F14: F14Keys, F17: F17Keys, F18: F18Keys, F22: [A_ThisHotkey, "F22 Up"], F23: ["Z", "F23 Up"]})
 
 	return
 
@@ -2675,57 +2720,16 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	}
 
 
-	; ######## F18 Combinator ########
+	; ######## F20 Combinator ########
 
-;;;;;;;; TODO: Window Commands
-
-;	if(Dual.cleanKey(A_PriorHotkey) = "\")
-;	{
-;		IniRead, command_PassThroughAutospacing, Status.ini, commandVars, command_PassThroughAutospacing
-;		IniRead, inTextBox, Status.ini, commandVars, inTextBox
-;
-;		if(command_PassThroughAutospacing = "F21")
-;		{
-;			SendInput {F21 Down}
-;		}
-;		else if(command_PassThroughAutospacing = "F22")
-;		{
-;			SendInput {F22 Down}
-;		}
-;
-;		if(!inTextBox)
-;		{
-;			SendInput {F18 Up}{Enter}
-;		}
-;		else
-;		{
-;			SendInput {Backspace}
-;		}
-;
-;
-;		SendInput {F24 Down}
-;
-;		return
-;	}
+	;;;;;;;; TODO: Window Commands
 
 	return
 	
 
 *Space::
-
-	if(GetKeyState("F14")) ; Suppressing keypress when used to open window switcher
-	{
-		return
-	}
-	
-	if(GetKeyState("F21") or GetKeyState("F22")) ; Suppressing keypress when pressing space would lead to a typo around punc
-	{
-		return
-	}
-	
-
-	dual.comboKey()
-
+*Space Up::
+	dual.combine("F16", A_ThisHotkey, settings = false, {F14: "", F22: "", F23:""})
 	return
 
 *1::
@@ -2737,7 +2741,7 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	}
 	
 
-	dual.combine("F15", "F13 Down", settings = false, {F13: "F15 Down", F14: "", F15: "F15 Up"})
+	dual.combine("F17", "F13 Down", settings = false, {F13: "F17 Down", F14: "", F17: "F17 Up"})
 
 	return
 
@@ -2751,23 +2755,15 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	}
 
 
-	dual.combine("F15", "F13 Down", settings = false, {F13: "F15 Down", F14: "", F15: "F15 Up"})
+	dual.combine("F17", "F13 Down", settings = false, {F13: "F17 Down", F14: "", F17: "F17 Up"})
 
-	SendInput {F17 Down}
+	SendInput {F19 Down}
 	
 	return
 
 
 *LCtrl::
-*RCtrl::
-
-	defaultKeys := ["F19 Down", "F20 Down"]
-	F19Keys := ["F19 Up", "F20 Up"]
-
-	dual.comboKey(defaultKeys, {F19: F19Keys})
-
-	return
-	
+*RCtrl::dual.comboKey("F21 Down", {F21: "F21 Up"})
 
 
 *2::
@@ -2779,17 +2775,17 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	}
 
 
-	; ######## F21 Combinator ########
-
-	F21Keys := ["F21 Up", "F14 Down"]
-
-
 	; ######## F22 Combinator ########
 
 	F22Keys := ["F22 Up", "F14 Down"]
+
+
+	; ######## F23 Combinator ########
+
+	F23Keys := ["F23 Up", "F14 Down"]
 	
 
-	dual.combine("F16", "F14 Down", settings = false, {F13: [":", "F13 Up"], F14: "F16 Down", F15: ":", F16: "F16 Up", F21: F21Keys, F22: F22Keys})
+	dual.combine("F18", "F14 Down", settings = false, {F13: [":", "F13 Up"], F14: "F18 Down", F17: ":", F18: "F18 Up", F22: F22Keys, F23: F23Keys})
 	
 	return
 
@@ -2803,7 +2799,7 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	}
 
 
-	dual.combine("F16", "F14 Down")
+	dual.combine("F18", "F14 Down")
 
 	return
 
@@ -2832,26 +2828,26 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 		}
 		else
 		{
-			SendInput {Backspace}{Delete}{F23 Up}
+			SendInput {Backspace}{Delete}{F24 Up}
 		}
 	
 		return
 	}
 
 
-	dual.comboKey({F21: ["Backspace", "Backspace", "F21 Up"], F22: ["Backspace", "Backspace", "F22 Up"]})
+	dual.comboKey({F22: ["Backspace", "Backspace", "F22 Up"], F23: ["Backspace", "Backspace", "F23 Up"]})
 
 	return
 
 *\::
 
-	if(GetKeyState("F21"))
-	{
-		command_PassThroughAutospacing := "F21"
-	}
-	else if(GetKeyState("F22"))
+	if(GetKeyState("F22"))
 	{
 		command_PassThroughAutospacing := "F22"
+	}
+	else if(GetKeyState("F23"))
+	{
+		command_PassThroughAutospacing := "F23"
 	}
 	else
 	{
@@ -2865,15 +2861,15 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	
 	if(inTextBox)
 	{
-		defaultKeys := ["\", "F18 Down"]
-		F21Keys := ["\", "F18 Down", "F21 Up"]
-		F22Keys := ["\", "F18 Down", "F22 Up"]
+		defaultKeys := ["\", "F20 Down"]
+		F22Keys := ["\", "F20 Down", "F22 Up"]
+		F23Keys := ["\", "F20 Down", "F23 Up"]
 	}
 	else 
 	{
-		defaultKeys := "F18 Down"
-		F21Keys := ["F18 Down", "F21 Up"]
-		F22Keys := ["F18 Down", "F22 Up"]
+		defaultKeys := "F20 Down"
+		F22Keys := ["F20 Down", "F22 Up"]
+		F23Keys := ["F20 Down", "F23 Up"]
 	}
 
 	if(GetKeyState("F14"))
@@ -2882,7 +2878,7 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 	}
 
 
-	dual.combine("F20", defaultKeys, settings = false, {F21: F21Keys, F22: F22Keys})
+	dual.comboKey(defaultKeys, {F22: F22Keys, F23: F23Keys})
 
 	if(!inTextBox)
 	{
@@ -2891,21 +2887,7 @@ lastRealKeyDown := "" ; Track keypresses before layers are activated to use in p
 
 	return
 	
-*\ Up::
-	
-	if(inTextBox)
-	{
-		defaultKeys := ["\", "F18 Down"]
-	}
-	else 
-	{
-		defaultKeys := "F18 Down"
-	}
 	
 	
-	dual.combine("F20", defaultKeys)
-	
-	return
-
 	
 #If
