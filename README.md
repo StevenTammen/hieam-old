@@ -2,6 +2,8 @@
 
 ```
 ;    TODO: get normal text briefs working with terminating characters. Dynamic regex hotstrings with subroutines?
+;    TODO: get normal text expansion with {Expd} working. E.g., u{Expd} --> you, instantly.
+;    TODO: get Alt-F4 put in place for \-prefixed Esc
 ;    TODO: make \ into a dual role key with F21 for sequences of non-autospaced characters. Figure out how to deal with downKey and upKey differences 
 ;    TODO: make keys after a #@`~ on F16 layer act as if F17 was down, not F16.
 
@@ -78,40 +80,37 @@ nnoremap <Bs> X
 nnoremap <Del> x
 ```
 
-And for those who use Spacemacs (or just evil-mode) in Emacs:
+And for those who use Spacemacs (or some other evil-based keymap) in Emacs:
 
 ```
-(with-eval-after-load 'evil-maps  ;; rebind normal mode behavior according to keyboard layout
+(define-key evil-normal-state-map "t" 'evil-backward-char)
+(define-key evil-normal-state-map "T" 'evil-window-top)
 
-	(define-key evil-normal-state-map "t" 'evil-backward-char)
-	(define-key evil-normal-state-map "T" 'evil-window-top)
+(define-key evil-normal-state-map "s" 'evil-next-line)
 
-	(define-key evil-normal-state-map "s" 'evil-next-line)
+(define-key evil-normal-state-map "r" 'evil-forward-char)
+(define-key evil-normal-state-map "R" 'evil-window-bottom)
 
-	(define-key evil-normal-state-map "r" 'evil-forward-char)
-	(define-key evil-normal-state-map "R" 'evil-window-bottom)
+(define-key evil-normal-state-map "c" 'evil-previous-line)
 
-	(define-key evil-normal-state-map "c" 'evil-previous-line)
+(define-key evil-normal-state-map "h" 'evil-delete)
+(define-key evil-normal-state-map "H" evil-delete-line)
+(define-key evil-normal-state-map "hh" 'evil-delete-whole-line)
 
-	(define-key evil-normal-state-map "h" 'evil-delete)
-	(define-key evil-normal-state-map "H" evil-delete-line)
-	(define-key evil-normal-state-map "hh" 'evil-delete-whole-line)
+(define-key evil-normal-state-map "k" 'evil-substitute)
 
-	(define-key evil-normal-state-map "k" 'evil-substitute)
+(define-key evil-normal-state-map "l" 'evil-replace)
+(define-key evil-normal-state-map "L" 'evil-replace-state)
 
-	(define-key evil-normal-state-map "l" 'evil-replace)
-	(define-key evil-normal-state-map "L" 'evil-replace-state)
+(define-key evil-normal-state-map "d" 'evil-change)
+(define-key evil-normal-state-map "D" 'evil-change-line)
+(define-key evil-normal-state-map "dd" 'evil-change-whole-line)
 
-	(define-key evil-normal-state-map "d" 'evil-change)
-	(define-key evil-normal-state-map "D" 'evil-change-line)
-	(define-key evil-normal-state-map "dd" 'evil-change-whole-line)
+(define-key evil-normal-state-map "x" 'evil-find-char-to)
+(define-key evil-normal-state-map "X" 'evil-find-char-to-backward)
 
-	(define-key evil-normal-state-map "x" 'evil-find-char-to)
-	(define-key evil-normal-state-map "X" 'evil-find-char-to-backward)
-
-	(define-key evil-normal-state-map (kbd "DEL") 'evil-delete-backward-char)
-	(define-key evil-normal-state-map [deletechar] 'evil-delete-char)
-)
+(define-key evil-normal-state-map (kbd "DEL") 'evil-delete-backward-char)
+(define-key evil-normal-state-map [deletechar] 'evil-delete-char)
 ```
 
 The mnemonics below make sense to me, which is what is important. You may want to do your own tinkering if you don't like them. You can use [this page](https://vimhelp.appspot.com/index.txt.html) to make sure you aren't losing commands in your remapping, and [this page](https://github.com/emacsmirror/evil/blob/master/evil-maps.el) to identify evil-functions for vim behavior. I haven't looked much into global command or bracket command conflicts caused by these remappings, but I'll handle them later (I only noticed a couple conflicts). I'm still too new to Vim to really worry about much other than straight normal mode.
