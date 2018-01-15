@@ -33,15 +33,15 @@
 <img src = "https://steventammen.com/assets/images/keyboard-layouts/steno.png">
 <br/>
 
-I have not yet started the last three layers (and probably won't for a while as they are not as essential), but have the others mostly completed in the form of the autohotkey scripts located in this repository.
+I have not yet finished the last three layers (and probably won't for a while as they are not as essential), but have the others mostly completed in the form of the autohotkey scripts located in this repository.
 
 Please note that the keybindings are currently assuming a specific keymap. I am temporarily using a Kinesis Advantage 2 (until I get around to buying or assembling a board with a hackable microcontroller), so the assumed default map is based on the on-board firmware remapped layout that I have on my Kinesis. Here's a picture:
 
-<img src = "https://steventammen.com/assets/images/keyboard-layouts/kinesis.png"><br/>
+<br/><img src = "https://steventammen.com/assets/images/keyboard-layouts/kinesis.png"><br/><br/>
 
 This repository also includes my modified version of [iswitchw](https://github.com/tvjg/iswitchw), a window switching autohotkey application. My version will only pull windows from the current virtual desktop (instead of from all non-hidden windows). I used a very useful [DLL file](https://github.com/Ciantic/VirtualDesktopAccessor) for accessing virtual desktops, courtesy of Jari Pennanen. I also included my slightly tweaked version of [Dual](https://github.com/lydell/dual), an autohotkey library that allows for the creation of dual-role keys and lag-free key combinations, and [hotstrings.ahk](https://autohotkey.com/board/topic/114764-regex-dynamic-hotstrings/), which allows for RegEx based dynamic hotstrings.
 
-I have not worked much on text expansion and commands in expand.ahk, since I want to get up to speed on the layout before sinking in time on these fronts. (Both of these do work, however). I'll probably write a script to automatically create the text expansions from a CSV file at some point, once I start using them more.
+Character-terminated hotstrings are currently non-functional due to the complications that layers introduce into the key history. It may be possible to overcome the complications through some dynamic regex hotstrings and cleverness, but having firmware layers abstracted out of AutoHotkey would make the process much cleaner. This is not a big priority for me because I'm learning stenography, but I plan to get it working eventually. Commands (e.g., \sleep{Expd}) and named entities (e.g., \pi{Expd}) are fully functional.
 
 The Tab switching, desktop switching, and launching capabilities included in the layout have dependencies on the Chrome extension [Fast Tab Switcher](https://chrome.google.com/webstore/detail/fast-tab-switcher/jkhfenkikopkkpboaipgllclaaehgpjf), the virtual desktop manager [Virtuawin](http://virtuawin.sourceforge.net/), and the app launcher [Launchy](http://www.launchy.net/), respectively. I did not modify any of these applications (or their default activation hotkeys) except for setting the switch to desktop hotkeys in Virtuawin to be Alt + FKey (e.g., Alt + F1 for the first virtual desktop), with the exception of the 4th virtual desktop, which uses Ctrl + F4 instead (for obvious reasons).
 
