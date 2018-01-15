@@ -61,7 +61,43 @@ nnoremap <Bs> X
 nnoremap <Del> x
 ```
 
-The mnemonics below make sense to me, which is what is important. You may want to do your own tinkering if you don't like them. You can use [this page](https://vimhelp.appspot.com/index.txt.html) to make sure you aren't losing commands in your remapping. I haven't looked much into global command or bracket command conflicts caused by these remappings, but I'll handle them later (I only noticed a couple conflicts). I'm still too new to Vim to really worry about much other than straight normal mode.
+And for those who use Spacemacs (or just evil-mode) in Emacs:
+
+```
+(with-eval-after-load 'evil-maps  ;; rebind normal mode behavior according to keyboard layout
+
+	(define-key evil-normal-state-map "t" 'evil-backward-char)
+	(define-key evil-normal-state-map "T" 'evil-window-top)
+
+	(define-key evil-normal-state-map "s" 'evil-next-line)
+
+	(define-key evil-normal-state-map "r" 'evil-forward-char)
+	(define-key evil-normal-state-map "R" 'evil-window-bottom)
+
+	(define-key evil-normal-state-map "c" 'evil-previous-line)
+
+	(define-key evil-normal-state-map "h" 'evil-delete)
+	(define-key evil-normal-state-map "H" evil-delete-line)
+	(define-key evil-normal-state-map "hh" 'evil-delete-whole-line)
+
+	(define-key evil-normal-state-map "k" 'evil-substitute)
+
+	(define-key evil-normal-state-map "l" 'evil-replace)
+	(define-key evil-normal-state-map "L" 'evil-replace-state)
+
+	(define-key evil-normal-state-map "d" 'evil-change)
+	(define-key evil-normal-state-map "D" 'evil-change-line)
+	(define-key evil-normal-state-map "dd" 'evil-change-whole-line)
+
+	(define-key evil-normal-state-map "x" 'evil-find-char-to)
+	(define-key evil-normal-state-map "X" 'evil-find-char-to-backward)
+
+	(define-key evil-normal-state-map (kbd "DEL") 'evil-delete-backward-char)
+	(define-key evil-normal-state-map [deletechar] 'evil-delete-char)
+)
+```
+
+The mnemonics below make sense to me, which is what is important. You may want to do your own tinkering if you don't like them. You can use [this page](https://vimhelp.appspot.com/index.txt.html) to make sure you aren't losing commands in your remapping, and [this page](https://github.com/emacsmirror/evil/blob/master/evil-maps.el) to identify evil-functions for vim behavior. I haven't looked much into global command or bracket command conflicts caused by these remappings, but I'll handle them later (I only noticed a couple conflicts). I'm still too new to Vim to really worry about much other than straight normal mode.
 
 Mnemonics:
 
@@ -69,7 +105,7 @@ Mnemonics:
 - D for "delete" = delete Nmove text and enter insert mode. You don't delete text you want to paste, you *harvest* it. Replaces c/C/cc.
 - K for "kill" = delete character under cursor and enter insert mode. You delete text but kill characters. (This still gives me a chuckle every time... I guess I have a strange sense of humor). Replaces s. S as a command is lost, since I just use dd (i.e., cc) instead.
 - Backspace/Delete take over X/x, respectively. I never understood why x was necessary as a separate command.
-- X for "up/back to but excluding" = till. Replaces t/T.
+- X for "up/back to but excluding" = till/to. Replaces t/T.
 - L for "layer" = overwrite N characters or toggle overwrite mode. Replaces r/R.
 
 Note that J and K retain their special meanings. I'll probably remap j to something else eventually once I have a better idea what would be useful to put there.
