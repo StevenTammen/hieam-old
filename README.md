@@ -85,7 +85,8 @@ nnoremap X T
 And for those who use Spacemacs (or some other evil-based keymap) in Emacs:
 
 ```
-(global-set-key (kbd "C-h") 'evil-delete-backward-char)
+(global-set-key (kbd "C-h") 'delete-backward-char)
+(define-key evil-normal-state-map (kbd "C-h") 'evil-delete-backward-char)
 (define-key evil-normal-state-map [deletechar] 'evil-delete-char)
 
 (define-key evil-normal-state-map "t" 'evil-backward-char)
@@ -99,8 +100,7 @@ And for those who use Spacemacs (or some other evil-based keymap) in Emacs:
 (define-key evil-normal-state-map "c" 'evil-previous-line)
 
 (define-key evil-normal-state-map "h" 'evil-delete)
-(define-key evil-normal-state-map "H" evil-delete-line)
-(define-key evil-normal-state-map "hh" 'evil-delete-whole-line)
+(define-key evil-normal-state-map "H" 'evil-delete-line)
 
 (define-key evil-normal-state-map "k" 'evil-substitute)
 
@@ -109,7 +109,6 @@ And for those who use Spacemacs (or some other evil-based keymap) in Emacs:
 
 (define-key evil-normal-state-map "d" 'evil-change)
 (define-key evil-normal-state-map "D" 'evil-change-line)
-(define-key evil-normal-state-map "dd" 'evil-change-whole-line)
 
 (define-key evil-normal-state-map "x" 'evil-find-char-to)
 (define-key evil-normal-state-map "X" 'evil-find-char-to-backward)
