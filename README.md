@@ -47,9 +47,14 @@ The Tab switching, desktop switching, and launching capabilities included in the
 
 Note that all of this is very rough at the moment, with no documentation support. I wanted to get my layout working as quickly as possible, and did not prioritize maintainability and elegance this go around. Since I haven't done any extensive unit testing, there are probably at least a few bugs in the ~4000 lines of code. Any contributions are welcome and appreciated.
 
-My current modifications to make Vim work with the layout switch around some commands to get the cursor keys in the T-shaped formation of tcsr. All the changes have mnemonics, albeit different ones than vanilla Vim. Here's the code to put in .vimrc:
+My current modifications to make terminal Vim/Emacs work with the layout switch around some commands to get the cursor keys in the T-shaped formation of tcsr. All the changes have mnemonics, albeit different ones than vanilla Vim.
+
+Here's the code to put in .vimrc:
 
 ```
+nnoremap <C-h> X
+nnoremap <Del> x
+
 nnoremap t h
 nnoremap T H
 
@@ -75,14 +80,14 @@ nnoremap dd cc
 
 nnoremap x t
 nnoremap X T
-
-nnoremap <Bs> X
-nnoremap <Del> x
 ```
 
 And for those who use Spacemacs (or some other evil-based keymap) in Emacs:
 
 ```
+(global-set-key (kbd "C-h") 'evil-delete-backward-char)
+(define-key evil-normal-state-map [deletechar] 'evil-delete-char)
+
 (define-key evil-normal-state-map "t" 'evil-backward-char)
 (define-key evil-normal-state-map "T" 'evil-window-top)
 
@@ -108,9 +113,6 @@ And for those who use Spacemacs (or some other evil-based keymap) in Emacs:
 
 (define-key evil-normal-state-map "x" 'evil-find-char-to)
 (define-key evil-normal-state-map "X" 'evil-find-char-to-backward)
-
-(define-key evil-normal-state-map (kbd "DEL") 'evil-delete-backward-char)
-(define-key evil-normal-state-map [deletechar] 'evil-delete-char)
 ```
 
 The mnemonics below make sense to me, which is what is important. You may want to do your own tinkering if you don't like them. You can use [this page](https://vimhelp.appspot.com/index.txt.html) to make sure you aren't losing commands in your remapping, and [this page](https://github.com/emacsmirror/evil/blob/master/evil-maps.el) to identify evil-functions for vim behavior. I haven't looked much into global command or bracket command conflicts caused by these remappings, but I'll handle them later (I only noticed a couple conflicts). I'm still too new to Vim to really worry about much other than straight normal mode.
